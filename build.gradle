@@ -22,7 +22,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintray_plugin_version"
         classpath 'net.researchgate:gradle-release:2.4.0'
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
 
@@ -44,23 +44,13 @@ ext.dokkaExcludes = [
 ext.globalM2 = "$buildDir/m2"
 ext.publishLocal = project.hasProperty('publishLocal')
 
-
-def platformOf(Project project) {
-    def commonModules = ['ktor-client-core', 'ktor-utils', 'ktor-http']
-    def nativeModules = ['ktor-client-ios', 'ktor-http-ios', 'ktor-utils-ios', 'ktor-client-core-ios']
-
-    if (project.name in commonModules) return 'common'
-    if (project.name in nativeModules) return 'native'
-    return 'jvm'
-}
+apply from: 'gradle/platform.gradle'
 
 allprojects {
     def platform = platformOf(project)
 
     group = 'io.ktor'
     version = configuredVersion
-
-    apply from: rootProject.file("gradle/${platform}.gradle")
 
     repositories {
 //        mavenLocal()
@@ -80,6 +70,11 @@ allprojects {
             maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
         }
         maven { url 'https://dl.bintray.com/qwwdfsad/kotlinx' }
+    }
+
+    apply from: rootProject.file("gradle/${platform}.gradle")
+    if (platform != 'native') {
+        apply from: rootProject.file('gradle/publish.gradle')
     }
 
     sourceSets {
