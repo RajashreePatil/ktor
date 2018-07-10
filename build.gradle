@@ -55,7 +55,6 @@ allprojects {
     repositories {
 //        mavenLocal()
         jcenter()
-        maven { url 'https://dl.bintray.com/e5l/kotlinx-io-test' }
 
         if (kotlin_version.contains('-eap') || kotlin_version.contains('-rc')) {
             if (kotlin_version.startsWith("1.1")) {
@@ -69,6 +68,8 @@ allprojects {
         } else if (kotlin_version.endsWith('-SNAPSHOT')) {
             maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
         }
+
+        maven { url 'https://dl.bintray.com/e5l/kotlinx-io-test' }
         maven { url 'https://dl.bintray.com/qwwdfsad/kotlinx' }
     }
 
@@ -79,7 +80,6 @@ allprojects {
 
     sourceSets {
         main {
-            java.srcDir 'src'
             kotlin.srcDir 'src'
             resources.srcDir 'resources'
         }
@@ -88,6 +88,21 @@ allprojects {
             resources.srcDir 'test-resources'
         }
     }
+
+    task sourceJar(type: Jar, dependsOn: classes) {
+        classifier 'sources'
+        from sourceSets.main.kotlin
+        duplicatesStrategy DuplicatesStrategy.EXCLUDE
+        def platformSrc = sourceSets.main.allSource
+        def commonSrc = rootProject.sourceSets.main.allSource
+        from(platformSrc + commonSrc)
+    }
+
+    task emptyJar(type: Jar) {
+        classifier 'javadoc'
+    }
+
+    tasks.build.dependsOn(['sourceJar', 'emptyJar'])
 
     kotlin.experimental.coroutines 'enable'
 }

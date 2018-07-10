@@ -3,7 +3,6 @@ apply plugin: 'kotlin-platform-jvm'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
-apply plugin: 'java'
 
 task jarTest(type: Jar, dependsOn: testClasses) {
     from sourceSets.test.output
@@ -35,7 +34,6 @@ configurations {
     testOutput.extendsFrom(testCompile)
     boot
 }
-
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
