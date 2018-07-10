@@ -8,6 +8,11 @@ import io.ktor.client.response.*
 import io.ktor.util.*
 import kotlinx.coroutines.experimental.*
 
+expect fun HttpClient(
+    useDefaultTransformers: Boolean = true,
+    block: HttpClientConfig.() -> Unit = {}
+): HttpClient
+
 /**
  * Asynchronous client to perform HTTP requests.
  *
