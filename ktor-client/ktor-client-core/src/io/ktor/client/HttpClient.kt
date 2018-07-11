@@ -7,6 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.client.response.*
 import io.ktor.util.*
 import kotlinx.coroutines.experimental.*
+import kotlinx.io.core.*
 
 expect fun HttpClient(
     useDefaultTransformers: Boolean = true,
@@ -125,7 +126,7 @@ class HttpClient(
             @Suppress("UNCHECKED_CAST")
             val feature = attributes[key as AttributeKey<Any>]
 
-            if (feature is AutoCloseable) {
+            if (feature is Closeable) {
                 feature.close()
             }
         }
